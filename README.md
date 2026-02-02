@@ -6,7 +6,11 @@ Lawrence Kim, Sarah Pratt, Yecheng Wang, Flora Jin
 
 [Sajan Work Progress Track Doc](https://docs.google.com/document/d/14VDSbiGP7JsEkdMbIqouRZWuRzqMW7q0UEdbqUpfDkA/edit?tab=t.0)
 
+---
+
 ### Whisper - speech to text
+To use the speech-to-text.py, follow the start-up instructions on the Whisper official github repository
+https://github.com/openai/whisper
 
 ### TODO list
 - [ ] Need to test on alienware laptop to see if speech to text is working correctly on ubuntu 22.04
