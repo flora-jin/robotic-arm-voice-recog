@@ -8,16 +8,29 @@ Lawrence Kim, Sarah Pratt, Yecheng Wang, Flora Jin
 
 ---
 
-### Whisper - speech to text
-To use the speech-to-text.py, follow the start-up instructions on the Whisper official github repository
-https://github.com/openai/whisper
+### Using `voice-llm.py` and `voice-text.py`
+!! Have not tested with microphone yet as alienware laptop does not have microphone access !!
+
+To test the LLM parsing:
+- Terminal 1: run `roscore` - allows files to talk to each other
+- Terminal 2: Run the ollama server `ollama serve`
+- Terminal 3: Run the python script `python3 voice-llm.py`
+- Terminal 4: Run `rostopic echo /robot/command` to view what the robot would receive via ROS Node
+- Terminal 5: Will simulate the microphone input can run for example `rostopic pub -1 /voice/raw_text std_msgs/String "{data: 'move forward a little'}"`
+
+After running all the terminals in order, Terminal 4 should output something like `data: "FORWARD"` or `data: "UNKNOWN"` for unknown commands
+
+---
 
 ### TODO list
 - [ ] Need to test on alienware laptop to see if speech to text is working correctly on ubuntu 22.04
-- [ ] Write LLM connection in order to parse text from Whisper
-- [ ] ROSNode connection using Topics
 
 ---
+
+### Flora Feb 5th Update
+- Added file `voice-llm.py` to test LLM connection for parsing text
+- Updated `voice-text.py` to connect via ROS Node to publish text to LLM
+- Was able to successfully test that LLM can parse "move forward a little" and "go home" as "HOME" and "FORWARD"
 
 ### Flora Feb 1st Update
 
