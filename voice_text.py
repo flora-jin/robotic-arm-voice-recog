@@ -21,7 +21,7 @@ def speech_node():
     recognizer = sr.Recognizer()
 
     # Index for selecting desired microphone
-    MICROPHONE_INDEX = 1  # Change this to the index found
+    MICROPHONE_INDEX = 2  # Change this to the index found
 
     # Initialize Mic with 16kHz Sample Rate
     # Whisper requires 16000Hz. If we don't set this, it defaults to 44100/48000 which would make audio sound slow motion

@@ -9,23 +9,28 @@ Lawrence Kim, Sarah Pratt, Yecheng Wang, Flora Jin
 ---
 
 ### Using `voice-llm.py` and `voice-text.py`
-!! Have not tested with microphone yet as alienware laptop does not have microphone access !!
 
-To test the LLM parsing:
+To test the LLM parsing with speaker:
+!! Before starting ensure the index is updated on voice_text.py with the correct speaker index !!
 - Terminal 1: run `roscore` - allows files to talk to each other
 - Terminal 2: Run the ollama server `ollama serve`
-- Terminal 3: Run the python script `python3 voice-llm.py`
-- Terminal 4: Run `rostopic echo /robot/command` to view what the robot would receive via ROS Node
-- Terminal 5: Will simulate the microphone input can run for example `rostopic pub -1 /voice/raw_text std_msgs/String "{data: 'move forward a little'}"`
+- Terminal 3: Run the python script `python3 voice_text.py`
+- Terminal 4: Run the python script `python3 voice_llm.py`
+- Terminal 5: Run `rostopic echo /speaker/command` to view what the command the LLM outputted
 
-After running all the terminals in order, Terminal 4 should output something like `data: "FORWARD"` or `data: "UNKNOWN"` for unknown commands
+After running all the terminals in order, speak into the microphone.
+Terminal 5 should output either `Sending Command: PLAY_SOUND` or `Intent Unclear`
 
 ---
 
 ### TODO list
-- [ ] Need to test on alienware laptop to see if speech to text is working correctly on ubuntu 22.04
+- [ ] Need to connect speaker via bluetooth or AUX cord to Alienware laptop
 
 ---
+
+### Flora Feb 28th Update
+- Changed voice_llm.py to detect for speaker control phrases
+- Now if user asks to play sound or stop sound, LLM outputs correct command
 
 ### Flora Feb 5th Update
 - Added file `voice-llm.py` to test LLM connection for parsing text
