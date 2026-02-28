@@ -5,34 +5,45 @@ import ollama
 import json
 
 # 1. Define the Robot's "Menu" (Valid Commands)
-VALID_COMMANDS = ["HOME", "FORWARD", "UP", "STOP"]
+VALID_COMMANDS = ["PLAY_SOUND", "STOP_SOUND"]
 
 def ask_ollama(user_text):
-    # The prompt forces Ollama to act as a classifier, not a chatbot
-    system_prompt = f"""
-    You are a robot controller. Map the user's speech to one of these EXACT commands: {VALID_COMMANDS}.
-    
-    Rules:
-    - Output ONLY the command word.
-    - If the user asks for something impossible, output "UNKNOWN".
-    - Do not write sentences.
-    
-    User: "{user_text}"
-    Command:
-    """
-    
     try:
-        response = ollama.chat(model='llama3', messages=[
-            {'role': 'user', 'content': system_prompt}
-        ])
-        # Clean up output (remove whitespace/newlines)
-        command = response['message']['content'].strip().upper()
-        
-        # Double check it's in our list (Safety check #1)
+        response = ollama.chat(
+            model='llama3',
+            messages=[
+                {
+                    'role': 'system',
+                    'content': """
+You are an intent classifier.
+
+Valid outputs:
+PLAY_SOUND
+STOP_SOUND
+UNKNOWN
+
+Rules:
+- Output ONLY one word from above.
+- No explanation.
+- No punctuation.
+"""
+                },
+                {
+                    'role': 'user',
+                    'content': user_text
+                }
+            ],
+            options={"temperature": 0}
+        )
+
+        raw_output = response['message']['content']
+        command = raw_output.strip().split()[0].replace(".", "").upper()
+
         if command in VALID_COMMANDS:
             return command
         else:
             return "UNKNOWN"
+
     except Exception as e:
         print(f"LLM Error: {e}")
         return "UNKNOWN"
@@ -58,7 +69,7 @@ if __name__ == '__main__':
     rospy.Subscriber('/voice/raw_text', String, callback)
     
     # Publish to Robot
-    cmd_pub = rospy.Publisher('/robot/command', String, queue_size=10)
+    cmd_pub = rospy.Publisher('/speaker/command', String, queue_size=10)
     
     print("🧠 Brain Node Ready. Waiting for text...")
     rospy.spin()
