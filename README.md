@@ -8,25 +8,31 @@ Lawrence Kim, Sarah Pratt, Yecheng Wang, Flora Jin
 
 ---
 
-### Using `voice-llm.py` and `voice-text.py`
+### Using `voice-control.py`
 
 To test the LLM parsing with speaker:
 !! Before starting ensure the index is updated on voice_text.py with the correct speaker index !!
-- Terminal 1: run `roscore` - allows files to talk to each other
-- Terminal 2: Run the ollama server `ollama serve`
-- Terminal 3: Run the python script `python3 voice_text.py`
-- Terminal 4: Run the python script `python3 voice_llm.py`
-- Terminal 5: Run `rostopic echo /speaker/command` to view what the command the LLM outputted
+!! Ensure speaker is connected via Bluetooth !!
+- Terminal 1: Run the ollama server `ollama serve`
+- Terminal 2: Run the python script `python3 voice_control.py`
 
-After running all the terminals in order, speak into the microphone.
-Terminal 5 should output either `Sending Command: PLAY_SOUND` or `Intent Unclear`
+After running the terminals in order, speak into the microphone.
+Speaker should begin playing music if LLM parses PLAY_SOUND command nad stop the music with the STOP_SOUND command.
 
 ---
 
 ### TODO list
-- [ ] Need to connect speaker via bluetooth or AUX cord to Alienware laptop
+- [ ] Need to connect speaker via bluetooth to Alienware laptop
+- [ ] Test that system is working on Ubuntu 20.04 after speaker has been connected
 
 ---
+
+### Flora March 4th Update
+- Added voice_control.py to combine voice_llm.py and voice_text.py into one file
+- Added threading for continuous command listening
+- Speaker plays music on command from microphone and stops music on command
+- Currently only tested that system working on MacOS
+- removed ROS nodes for simplicity
 
 ### Flora Feb 28th Update
 - Changed voice_llm.py to detect for speaker control phrases
@@ -38,6 +44,5 @@ Terminal 5 should output either `Sending Command: PLAY_SOUND` or `Intent Unclear
 - Was able to successfully test that LLM can parse "move forward a little" and "go home" as "HOME" and "FORWARD"
 
 ### Flora Feb 1st Update
-
 - Added file `speech-to-text.py` to use Whisper for using microphone (speech) to text
 - Added file `list_mics.py` to list available microphones that pyaudio can detect
