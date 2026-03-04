@@ -5,6 +5,8 @@ import ollama
 import numpy as np
 import platform
 import os
+import threading
+import subprocess
 
 # Valid Commands
 VALID_COMMANDS = ["PLAY_SOUND", "STOP_SOUND"]
@@ -16,6 +18,8 @@ pygame.mixer.init()
 print("⏳ Loading Whisper...")
 model = whisper.load_model("base")
 
+# Initialize audio process
+audio_process = None
 
 def listen_for_command():
     """Listen for voice commands and process them"""
@@ -88,16 +92,17 @@ Rules:
 
 # 🔊 Cross-platform audio playback
 def play_audio():
+    global audio_process
+
     system = platform.system()
-    file_path = "file_path.mp3"  # CHANGE THIS
+    file_path = "mozart.mp3"  # CHANGE THIS
 
     try:
         if system == "Darwin":  # macOS
-            os.system(f"afplay '{file_path}'")
+            audio_process = subprocess.Popen(["afplay", file_path])
 
         elif system == "Linux":
-            # Try PulseAudio then ALSA
-            os.system(f"paplay '{file_path}' || aplay '{file_path}'")
+            audio_process = subprocess.Popen(["paplay"], file_path)
 
         else:
             pygame.mixer.music.load(file_path)
@@ -111,12 +116,18 @@ def play_audio():
 
 def stop_audio():
     """Stop audio (works if pygame fallback is used)"""
+    global audio_process
+
     try:
+        if audio_process:
+            audio_process.terminate()
+            audio_process = None
+
         pygame.mixer.music.stop()
         print("⏹️ Sound stopped.")
-    except Exception:
-        pass
 
+    except Exception as e:
+        print(f"Stope error: {e}")
 
 def main():
     """Main loop"""
@@ -132,7 +143,7 @@ def main():
 
         if command_id == "PLAY_SOUND":
             print("Command: PLAY_SOUND")
-            play_audio()
+            threading.Thread(target=play_audio, daemon=True).start()
 
         elif command_id == "STOP_SOUND":
             print("Command: STOP_SOUND")
