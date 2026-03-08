@@ -1,0 +1,8 @@
+SpeechRecognition
+openai-whisper
+pygame
+ollama
+numpy
+fastapi
+uvicorn
+pyaudio

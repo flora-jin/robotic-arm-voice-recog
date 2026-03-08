@@ -8,6 +8,62 @@ import os
 import threading
 import subprocess
 
+# fastapi things
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+import uvicorn
+
+# ------------------------------------------------
+
+audio_options=["mozart.mp3", "rain_sounds.mp3", "oogabooga.mp3"]
+current_sound = audio_options[0]
+
+# FastAPI app
+app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins. For production, specify your frontend's URL.
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allows all headers
+)
+
+@app.get("/")
+def root():
+    return {"status": "Voice node running"}
+
+@app.get("/get_sounds")
+def get_sounds():
+    return audio_options
+
+# usage:
+# POST http://localhost:8000/change_sound?audio_file="mozart.mp3"
+@app.post("/change_sound")
+def change_sound(audio_file: str):
+    global current_sound
+
+    if audio_file not in audio_options:
+        return {
+            "message": "Sound not available"
+        }
+
+    current_sound = audio_file
+
+    return {
+        "message": "Sound updated",
+        "current_sound": current_sound
+    }
+
+@app.get("/health")
+def health():
+    return {"ok": True}
+
+def run_api():
+    uvicorn.run(app, host="0.0.0.0", port=8000, log_level="info")
+
+# ------------------------------------------------
+
 # Valid Commands
 VALID_COMMANDS = ["PLAY_SOUND", "STOP_SOUND"]
 
@@ -25,7 +81,7 @@ def listen_for_command():
     """Listen for voice commands and process them"""
     recognizer = sr.Recognizer()
 
-    MICROPHONE_INDEX = 3  # Change if needed
+    MICROPHONE_INDEX = 1  # Change if needed
 
     mic = sr.Microphone(device_index=MICROPHONE_INDEX, sample_rate=16000)
 
@@ -93,16 +149,17 @@ Rules:
 # 🔊 Cross-platform audio playback
 def play_audio():
     global audio_process
+    global current_sound
 
     system = platform.system()
-    file_path = "mozart.mp3"  # CHANGE THIS
+    file_path = current_sound
 
     try:
         if system == "Darwin":  # macOS
             audio_process = subprocess.Popen(["afplay", file_path])
 
         elif system == "Linux":
-            audio_process = subprocess.Popen(["paplay"], file_path)
+            audio_process = subprocess.Popen(["paplay", file_path])
 
         else:
             pygame.mixer.music.load(file_path)
@@ -154,4 +211,8 @@ def main():
 
 
 if __name__ == "__main__":
+    # Start FastAPI in background thread
+    api_thread = threading.Thread(target=run_api, daemon=True)
+    api_thread.start()
+
     main()
