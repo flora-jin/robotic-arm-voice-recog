@@ -15,7 +15,7 @@ import uvicorn
 
 # ------------------------------------------------
 
-audio_options=["mozart.mp3", "rain_sounds.mp3", "oogabooga.mp3"]
+audio_options=["mozart.mp3", "white_noise.mp3", "news.mp3"]
 current_sound = audio_options[0]
 
 # FastAPI app
@@ -65,7 +65,7 @@ def run_api():
 # ------------------------------------------------
 
 # Valid Commands
-VALID_COMMANDS = ["PLAY_SOUND", "STOP_SOUND"]
+VALID_COMMANDS = ["PLAY_MOZART", "PLAY_NEWS", "PLAY_WHITE_NOISE", "STOP_SOUND"]
 
 # Initialize Pygame
 pygame.mixer.init()
@@ -122,13 +122,19 @@ def ask_ollama(user_text):
 You are an intent classifier.
 
 Valid outputs:
-PLAY_SOUND
+PLAY_MOZART
+PLAY_NEWS
+PLAY_WHITE_NOISE
 STOP_SOUND
 UNKNOWN
 
 Rules:
 - Output ONLY one word.
 - No punctuation.
+- If the user asks for Mozart or music, output PLAY_MOZART.
+- If the user asks for news, output PLAY_NEWS.
+- If the user asks for white noise, output PLAY_WHITE_NOISE.
+- If the user asks to stop, output STOP_SOUND.
 """
                 },
                 {'role': 'user', 'content': user_text}
@@ -198,8 +204,20 @@ def main():
 
         command_id = ask_ollama(user_command)
 
-        if command_id == "PLAY_SOUND":
-            print("Command: PLAY_SOUND")
+        global current_sound
+        if command_id == "PLAY_MOZART":
+            print("Command: PLAY_MOZART")
+            current_sound = "mozart.mp3"
+            threading.Thread(target=play_audio, daemon=True).start()
+
+        elif command_id == "PLAY_NEWS":
+            print("Command: PLAY_NEWS")
+            current_sound = "news.mp3"
+            threading.Thread(target=play_audio, daemon=True).start()
+
+        elif command_id == "PLAY_WHITE_NOISE":
+            print("Command: PLAY_WHITE_NOISE")
+            current_sound = "white_noise.mp3"
             threading.Thread(target=play_audio, daemon=True).start()
 
         elif command_id == "STOP_SOUND":
