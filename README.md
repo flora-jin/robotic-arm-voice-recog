@@ -14,18 +14,22 @@ To test the LLM parsing with speaker:
 !! Before starting ensure the index is updated on voice_text.py with the correct speaker index !!
 !! Ensure speaker is connected via Bluetooth !!
 - Terminal 1: Run the ollama server `ollama serve`
-- Terminal 2: Run the python script `python3 voice_control.py`
+- Terminal 2: Run the python script `python voice_control.py`
 
 After running the terminals in order, speak into the microphone.
-Speaker should begin playing music if LLM parses PLAY_SOUND command nad stop the music with the STOP_SOUND command.
 
 ---
 
 ### TODO list
-- [ ] Need to connect speaker via bluetooth to Alienware laptop
-- [ ] Test that system is working on Ubuntu 20.04 after speaker has been connected
+- [ ] Need to connect speaker to Alienware laptop (if possible)
+- [ ] Finish ventriloquism section
+- [ ] Update GUI
 
 ---
+### Flora March 11th Update
+- Refactored voice_control.py into different files for the LLM, and actions
+- Able to successfully run Soundscape and Telepathy sections by playing the correct music after parsing the intent
+- Added a GUI as an instruction guide for users
 
 ### Flora March 4th Update
 - Added voice_control.py to combine voice_llm.py and voice_text.py into one file
