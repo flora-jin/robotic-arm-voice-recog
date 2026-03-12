@@ -37,10 +37,10 @@
         </div>
 
         <!-- Ventriloquism Widget -->
-        <div
-            class="bg-white/50 backdrop-blur-md shadow-lg rounded-2xl p-8 cursor-default flex flex-col items-center text-center">
-            <h2 class="text-3xl font-bold text-gray-700 mb-4">Ventriloquism</h2>
-            <p class="text-gray-500 font-medium">sound as properties of other objects</p>
+        <div onclick="showVentriloquism()"
+            class="bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 cursor-pointer hover:scale-105 hover:bg-white transition-all duration-300 transform flex flex-col items-center text-center">
+            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500 mb-4">Ventriloquism</h2>
+            <p class="text-gray-600 font-medium">sound as properties of other objects</p>
         </div>
 
     </div>
@@ -92,6 +92,54 @@
         </button>
     </div>
 
+    <!-- VENTRILOQUISM VIEW -->
+    <div id="ventriloquismView" class="hidden bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-10 w-full max-w-4xl">
+        <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">
+            🗣️ Ventriloquism
+        </h1>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+            <!-- Left Column: Actions -->
+            <div class="bg-gray-50 p-6 rounded-xl shadow-inner">
+                <h2 class="text-2xl font-bold text-gray-700 text-center mb-6 border-b border-gray-200 pb-2">Available Actions</h2>
+                <ul class="space-y-4">
+                    <li class="p-4 bg-white shadow-md border-l-4 border-orange-400 rounded-lg text-center font-semibold text-gray-800">
+                        Weather Report
+                    </li>
+                    <li class="p-4 bg-white shadow-md border-l-4 border-orange-400 rounded-lg text-center font-semibold text-gray-800">
+                        Read Aloud
+                    </li>
+                    <li class="p-4 bg-white shadow-md border-l-4 border-orange-400 rounded-lg text-center font-semibold text-gray-800">
+                        Last Updated
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Right Column: Locations -->
+            <div class="bg-gray-50 p-6 rounded-xl shadow-inner">
+                <h2 class="text-2xl font-bold text-gray-700 text-center mb-6 border-b border-gray-200 pb-2">Available Locations</h2>
+                <ul class="space-y-4">
+                    <li class="p-4 bg-white shadow-md border-l-4 border-red-500 rounded-lg text-center font-semibold text-gray-800">
+                        Window
+                    </li>
+                    <li class="p-4 bg-white shadow-md border-l-4 border-red-500 rounded-lg text-center font-semibold text-gray-800">
+                        Whiteboard
+                    </li>
+                    <li class="p-4 bg-white shadow-md border-l-4 border-red-500 rounded-lg text-center font-semibold text-gray-800">
+                        Plant
+                    </li>
+                </ul>
+            </div>
+        </div>
+        
+        <p class="text-gray-600 font-medium text-center mb-6 text-sm">Say commands like <strong>"Assign weather report to window"</strong> or <strong>"Check window"</strong>.</p>
+
+        <button onclick="showMain()"
+            class="w-full max-w-md mx-auto block bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-4 rounded-xl transition duration-200 shadow-xl transform hover:-translate-y-1">
+            Back to Menu
+        </button>
+    </div>
+
     <script>
         const API_BASE = "http://localhost:8000";
 
@@ -129,9 +177,15 @@
             document.getElementById("telepathyView").classList.remove("hidden");
         }
 
+        function showVentriloquism() {
+            document.getElementById("mainView").classList.add("hidden");
+            document.getElementById("ventriloquismView").classList.remove("hidden");
+        }
+
         function showMain() {
             document.getElementById("soundsView").classList.add("hidden");
             document.getElementById("telepathyView").classList.add("hidden");
+            document.getElementById("ventriloquismView").classList.add("hidden");
             document.getElementById("mainView").classList.remove("hidden");
         }
     </script>

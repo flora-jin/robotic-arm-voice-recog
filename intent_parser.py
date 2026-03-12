@@ -2,7 +2,9 @@ import ollama
 
 # Valid Commands
 VALID_COMMANDS = ["PLAY_MOZART", "PLAY_NEWS", "PLAY_WHITE_NOISE", "STOP_SOUND",
-                  "SET_TIMER", "SEND_REMINDER", "WISH_BIRTHDAY"]
+                  "SET_TIMER", "SEND_REMINDER", "WISH_BIRTHDAY",
+                  "ASSIGN_WEATHER_REPORT", "ASSIGN_READ_ALOUD", "ASSIGN_LAST_UPDATED",
+                  "CHECK_WINDOW", "CHECK_WHITEBOARD", "CHECK_PLANT"]
 
 def ask_ollama(user_text):
     """Classify intent using Ollama"""
@@ -23,6 +25,12 @@ STOP_SOUND
 SET_TIMER
 SEND_REMINDER
 WISH_BIRTHDAY
+ASSIGN_WEATHER_REPORT
+ASSIGN_READ_ALOUD
+ASSIGN_LAST_UPDATED
+CHECK_WINDOW
+CHECK_WHITEBOARD
+CHECK_PLANT
 UNKNOWN
 
 Rules:
@@ -35,6 +43,12 @@ Rules:
 - If the user asks to set a timer to notify them: output SET_TIMER.
 - If the user asks to send a meeting reminder: output SEND_REMINDER.
 - If the user asks to wish someone a happy birthday: output WISH_BIRTHDAY.
+- If the user asks to assign a weather report (to anywhere): output ASSIGN_WEATHER_REPORT.
+- If the user asks to assign reading aloud (to anywhere): output ASSIGN_READ_ALOUD.
+- If the user asks to assign last updated (to anywhere): output ASSIGN_LAST_UPDATED.
+- If the user asks to check the window: output CHECK_WINDOW.
+- If the user asks to check the whiteboard: output CHECK_WHITEBOARD.
+- If the user asks to check the plant: output CHECK_PLANT.
 - If the intent is unclear, output UNKNOWN.
 """
                 },
