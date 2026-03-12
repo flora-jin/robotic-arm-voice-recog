@@ -11,6 +11,7 @@ import uvicorn
 from intent_parser import ask_ollama
 from soundscape import get_sounds, set_current_sound, get_current_sound, execute_command
 from telepathy import is_telepathy_command, execute_telepathy_command
+from ventriloquism import is_ventriloquism_command, execute_ventriloquism_command
 # FastAPI app
 app = FastAPI()
 
@@ -103,6 +104,8 @@ def main():
 
             if is_telepathy_command(command_id):
                 execute_telepathy_command(command_id, source, recognizer, model)
+            elif is_ventriloquism_command(command_id):
+                execute_ventriloquism_command(command_id, source, recognizer, model, user_command)
             else:
                 execute_command(command_id)
 
