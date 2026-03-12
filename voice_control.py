@@ -59,8 +59,8 @@ print("⏳ Loading Whisper...")
 model = whisper.load_model("base")
 
 recognizer = sr.Recognizer()
-MICROPHONE_INDEX = 1  # Change if needed
-mic = sr.Microphone(device_index=MICROPHONE_INDEX)
+# MICROPHONE_INDEX = 4  # Change if needed
+mic = sr.Microphone()
 
 def listen_for_command(source):
     """Listen for voice commands and process them"""
