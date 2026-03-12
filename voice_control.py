@@ -90,6 +90,13 @@ def main():
     """Main loop"""
     print("🚀 Voice Command Node Ready")
 
+    # Gracefully attempt to init ROS node if running in Linux environment
+    try:
+        import rospy
+        rospy.init_node('voice_control_node', anonymous=True)
+    except ImportError:
+        pass # Already handled print in ventriloquism.py
+
     print("🔧 Adjusting for ambient noise...")
     with mic as source:
         recognizer.adjust_for_ambient_noise(source, duration=1)

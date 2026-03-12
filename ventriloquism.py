@@ -4,6 +4,20 @@ import time
 import numpy as np
 from soundscape import stop_audio
 
+# Graceful ROS imports for testing on non-ROS Linux/Mac machines
+try:
+    import rospy
+    from std_msgs.msg import String
+    ros_available = True
+    print("🤖 ROS detected. Ventriloquism will publish to /ventriloquism_commands")
+    
+    # Lazy Initialization of the Publisher
+    ventriloquism_pub = rospy.Publisher('/ventriloquism_commands', String, queue_size=10)
+    
+except ImportError:
+    ros_available = False
+    print("⚠️ ROS not detected. Ventriloquism will run locally without publishing.")
+    
 # Dictionary to hold the mapping from location to action (sound)
 # Default empty dict to start
 location_to_action = {}
@@ -82,6 +96,12 @@ def execute_ventriloquism_command(command_id, source, recognizer, model, origina
             elif action == "LAST_UPDATED":
                 # using white_noise.mp3 as placeholder for last updated
                 play_sound("white_noise.mp3")
+                
+            if ros_available:
+                msg = f"check,{action}"
+                ventriloquism_pub.publish(msg)
+                print(f"📡 Published ROS state: {msg}")
+                
         else:
             print(f"🔍 Ventriloquism: Checking {location}. No action assigned yet.")
             
@@ -114,6 +134,11 @@ def execute_ventriloquism_command(command_id, source, recognizer, model, origina
             location_to_action[target_location] = action_name
             print(f"✅ Ventriloquism: Successfully assigned {action_name} to {target_location}!")
             print(f"Current dict state: {location_to_action}")
+            
+            if ros_available:
+                msg = f"assign,{action_name}"
+                ventriloquism_pub.publish(msg)
+                print(f"📡 Published ROS state: {msg}")
             
             # Play confirm.mp3 from telepathy sounds folder as feedback
             stop_audio(verbose=False)
