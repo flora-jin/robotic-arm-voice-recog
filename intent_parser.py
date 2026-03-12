@@ -4,7 +4,8 @@ import ollama
 VALID_COMMANDS = ["PLAY_MOZART", "PLAY_NEWS", "PLAY_WHITE_NOISE", "STOP_SOUND",
                   "SET_TIMER", "SEND_REMINDER", "WISH_BIRTHDAY",
                   "ASSIGN_WEATHER_REPORT", "ASSIGN_READ_ALOUD", "ASSIGN_LAST_UPDATED",
-                  "CHECK_WINDOW", "CHECK_WHITEBOARD", "CHECK_PLANT"]
+                  "CHECK_WINDOW", "CHECK_WHITEBOARD", "CHECK_PLANT",
+                  "CHECK_WEATHER_REPORT", "CHECK_READ_ALOUD", "CHECK_LAST_UPDATED"]
 
 def ask_ollama(user_text):
     """Classify intent using Ollama"""
@@ -31,6 +32,9 @@ ASSIGN_LAST_UPDATED
 CHECK_WINDOW
 CHECK_WHITEBOARD
 CHECK_PLANT
+CHECK_WEATHER_REPORT
+CHECK_READ_ALOUD
+CHECK_LAST_UPDATED
 UNKNOWN
 
 Rules:
@@ -49,6 +53,9 @@ Rules:
 - If the user asks to check the window: output CHECK_WINDOW.
 - If the user asks to check the whiteboard: output CHECK_WHITEBOARD.
 - If the user asks to check the plant: output CHECK_PLANT.
+- If the user asks to check the weather report (without specifying a location): output CHECK_WEATHER_REPORT.
+- If the user asks to check the reading aloud (without specifying a location): output CHECK_READ_ALOUD.
+- If the user asks to check the last updated (without specifying a location): output CHECK_LAST_UPDATED.
 - If the intent is unclear, output UNKNOWN.
 """
                 },

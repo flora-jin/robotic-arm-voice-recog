@@ -24,7 +24,8 @@ location_to_action = {}
 
 ventriloquism_commands = [
     "ASSIGN_WEATHER_REPORT", "ASSIGN_READ_ALOUD", "ASSIGN_LAST_UPDATED",
-    "CHECK_WINDOW", "CHECK_WHITEBOARD", "CHECK_PLANT"
+    "CHECK_WINDOW", "CHECK_WHITEBOARD", "CHECK_PLANT",
+    "CHECK_WEATHER_REPORT", "CHECK_READ_ALOUD", "CHECK_LAST_UPDATED"
 ]
 
 def is_ventriloquism_command(command_id):
@@ -78,32 +79,50 @@ def execute_ventriloquism_command(command_id, source, recognizer, model, origina
     
     # Handle Check commands
     if command_id.startswith("CHECK_"):
-        location = command_id.split("_")[1].lower() # e.g. "WINDOW" -> "window"
+        target = command_id.split("CHECK_")[1] # e.g. "WINDOW" or "WEATHER_REPORT"
         
-        if location in location_to_action:
-            action = location_to_action[location]
-            print(f"🔍 Ventriloquism: Checking {location}. Playing assigned action: {action}")
-            
-            # Map action back to sound file
-            # Ideally these sound files exist in your sounds/ or telepathy_sounds/ folder
-            if action == "WEATHER_REPORT":
-                # Assuming news.mp3 stands for a "report" type sound since we are reusing existing ones, or we expect some file.
-                # using news.mp3 as a placeholder for weather report if no file exists.
-                play_sound("news.mp3") 
-            elif action == "READ_ALOUD":
-                # using mozart.mp3 as a placeholder for read aloud
-                play_sound("mozart.mp3")
-            elif action == "LAST_UPDATED":
-                # using white_noise.mp3 as placeholder for last updated
-                play_sound("white_noise.mp3")
+        target_lower = target.lower()
+        locations = ["window", "whiteboard", "plant"]
+        
+        action = None
+        
+        # Scenario A: User asked to check a location
+        if target_lower in locations:
+            location = target_lower
+            if location in location_to_action:
+                action = location_to_action[location]
+                print(f"🔍 Ventriloquism: Checking {location}. Playing assigned action: {action}")
+            else:
+                print(f"🔍 Ventriloquism: Checking {location}. No action assigned yet.")
+                return
                 
-            if ros_available:
-                msg = f"check,{action}"
-                ventriloquism_pub.publish(msg)
-                print(f"📡 Published ROS state: {msg}")
-                
+        # Scenario B: User asked to check an action directly
         else:
-            print(f"🔍 Ventriloquism: Checking {location}. No action assigned yet.")
+            action = target
+            # Optional: ensure this action is actually assigned anywhere before playing
+            if action not in location_to_action.values():
+                print(f"🔍 Ventriloquism: Checking {action}. This action is not currently assigned to any location.")
+                return
+            else:
+                print(f"🔍 Ventriloquism: Checking {action}. It is currently assigned to a location.")
+
+        # Map action back to sound file
+        # Ideally these sound files exist in your sounds/ or telepathy_sounds/ folder
+        if action == "WEATHER_REPORT":
+            # Assuming news.mp3 stands for a "report" type sound since we are reusing existing ones, or we expect some file.
+            # using news.mp3 as a placeholder for weather report if no file exists.
+            play_sound("news.mp3") 
+        elif action == "READ_ALOUD":
+            # using mozart.mp3 as a placeholder for read aloud
+            play_sound("mozart.mp3")
+        elif action == "LAST_UPDATED":
+            # using white_noise.mp3 as placeholder for last updated
+            play_sound("white_noise.mp3")
+            
+        if ros_available:
+            msg = f"check,{action}"
+            ventriloquism_pub.publish(msg)
+            print(f"📡 Published ROS state: {msg}")
             
     # Handle Assign commands
     elif command_id.startswith("ASSIGN_"):
