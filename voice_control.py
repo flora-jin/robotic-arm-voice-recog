@@ -124,7 +124,7 @@ def main():
                     pass
                 continue
                 
-            if "end task" in user_command:
+            if "stop task" in user_command:
                 if active_mode:
                     active_mode = False
                     print("🔴 Going to sleep. Say 'Hey robot arm' to wake me.")
