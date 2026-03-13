@@ -9,9 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from intent_parser import ask_ollama
-from soundscape import get_sounds, set_current_sound, get_current_sound, execute_command
+from soundscape import get_sounds, set_current_sound, get_current_sound, execute_command, stop_audio
 from telepathy import is_telepathy_command, execute_telepathy_command
 from ventriloquism import is_ventriloquism_command, execute_ventriloquism_command
+import pygame
 # FastAPI app
 app = FastAPI()
 
@@ -100,13 +101,48 @@ def main():
     print("🔧 Adjusting for ambient noise...")
     with mic as source:
         recognizer.adjust_for_ambient_noise(source, duration=1)
+        
+        active_mode = False
 
         while True:
             user_command = listen_for_command(source)
 
             if not user_command:
                 continue
+                
+            # Voice Activity Trigger Logic
+            if "hey robot arm" in user_command:
+                # Optional: Handle case where wakeword and command are in the same breath (e.g. "hey robot arm check window")
+                active_mode = True
+                print("🟢 Woken up! Ready to process commands.")
+                # Play confirmation beep
+                stop_audio(verbose=False)
+                try:
+                    pygame.mixer.music.load("telepathy_sounds/confirm.mp3")
+                    pygame.mixer.music.play()
+                except Exception as e:
+                    pass
+                continue
+                
+            if "end task" in user_command:
+                if active_mode:
+                    active_mode = False
+                    print("🔴 Going to sleep. Say 'Hey robot arm' to wake me.")
+                    # Play confirmation sleep beep
+                    stop_audio(verbose=False)
+                    try:
+                        pygame.mixer.music.load("telepathy_sounds/confirm.mp3")
+                        pygame.mixer.music.play()
+                    except Exception as e:
+                        pass
+                continue
+                
+            # If not active, ignore the ambient noise
+            if not active_mode:
+                # print("💤 Ignored ambient noise while asleep.")
+                continue
 
+            # Only reach here if active_mode is True and no sleepword was triggered
             command_id = ask_ollama(user_command)
 
             if is_telepathy_command(command_id):
