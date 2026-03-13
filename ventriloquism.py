@@ -67,8 +67,8 @@ def play_sound(track_name):
     """Play a specific track for check action"""
     stop_audio(verbose=False)
     try:
-        print(f"🔊 Ventriloquism: Playing sounds/{track_name}...")
-        pygame.mixer.music.load(f"sounds/{track_name}")
+        print(f"🔊 Ventriloquism: Playing ventriloquism_sounds/{track_name}...")
+        pygame.mixer.music.load(f"ventriloquism_sounds/{track_name}")
         pygame.mixer.music.play()
     except Exception as e:
         print(f"Ventriloquism playback error: {e}")
@@ -105,19 +105,18 @@ def execute_ventriloquism_command(command_id, source, recognizer, model, origina
                 return
             else:
                 print(f"🔍 Ventriloquism: Checking {action}. It is currently assigned to a location.")
+                for loc, act in location_to_action.items():
+                    if act == action:
+                        location = loc
+                        break
 
         # Map action back to sound file
-        # Ideally these sound files exist in your sounds/ or telepathy_sounds/ folder
         if action == "WEATHER_REPORT":
-            # Assuming news.mp3 stands for a "report" type sound since we are reusing existing ones, or we expect some file.
-            # using news.mp3 as a placeholder for weather report if no file exists.
-            play_sound("news.mp3") 
+            play_sound("weather.mp3") 
         elif action == "READ_ALOUD":
-            # using mozart.mp3 as a placeholder for read aloud
-            play_sound("mozart.mp3")
+            play_sound(f"read_{location}.mp3")
         elif action == "LAST_UPDATED":
-            # using white_noise.mp3 as placeholder for last updated
-            play_sound("white_noise.mp3")
+            play_sound(f"update_{location}.mp3")
             
         if ros_available:
             msg = f"check,{action}"
