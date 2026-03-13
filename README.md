@@ -20,6 +20,16 @@ After running the terminals in order, speak into the microphone.
 
 ---
 
+### Opening gui.html on iPad
+
+- On the laptop open a new terminal and navigate to the project folder
+- Find your laptop's current local IP address by running: `ifconfig | grep "inet " | grep -v 127.0.0.1` (e.g., 172.16.x.x)
+- *Note: You may need to update line 144 in `gui.html` to point to this new IP if it changed (`const API_BASE = "http://<YOUR_IP>:8000";`)*
+- Start the server: Run `python3 -m http.server 8080`
+- On the iPad open Safari and navigate to `http://<YOUR_IP>:8080/gui.html`
+
+---
+
 ### TODO list
 - [ ] Need to connect speaker to Alienware laptop (if possible)
 - [ ] Finish ventriloquism section
