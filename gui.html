@@ -1,235 +1,333 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
-<head>
-    <meta charset="UTF-8">
+  <head>
+    <meta charset="UTF-8" />
     <title>Voice Node Sound Controller</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .hidden {
-            display: none !important;
-        }
+      .hidden {
+        display: none !important;
+      }
     </style>
-</head>
+  </head>
 
-<body
-    class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center p-6 font-sans">
-
+  <body
+    class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen flex items-center justify-center p-6 font-sans"
+  >
     <!-- MAIN VIEW -->
     <div id="mainView" class="w-full max-w-5xl space-y-8">
-
-        <!-- Main Instructions -->
-        <div class="bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 text-center">
+      <!-- Main Instructions -->
+      <!-- <div class="bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 text-center">
             <h1 class="text-3xl font-bold text-gray-800 mb-4">🎙️ How to Begin</h1>
             <div class="space-y-3 text-gray-700 font-medium">
                 <p>To wake the robot up and listen to your voice commands, say <span class="font-bold text-indigo-600">“Hey Robot Arm”</span></p>
                 <p>When you are finished with the task and are ready to begin the next task, say <span class="font-bold text-pink-600">“Stop Task”</span></p>
             </div>
-        </div>
+        </div> -->
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
         <!-- Soundscape Widget -->
-        <div onclick="showSounds()"
-            class="bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 cursor-pointer hover:scale-105 hover:bg-white transition-all duration-300 transform flex flex-col items-center text-center">
-            <h2
-                class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-4">
-                Soundscape</h2>
-            <p class="text-gray-600 font-medium">sound as object</p>
+        <div
+          onclick="showSounds()"
+          class="bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 cursor-pointer hover:scale-105 hover:bg-white transition-all duration-300 transform flex flex-col items-center text-center"
+        >
+          <h2
+            class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-4"
+          >
+            Soundscape
+          </h2>
+          <p class="text-gray-600 font-medium">sound as object</p>
         </div>
 
         <!-- Telepathy Widget -->
-        <div onclick="showTelepathy()"
-            class="bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 cursor-pointer hover:scale-105 hover:bg-white transition-all duration-300 transform flex flex-col items-center text-center">
-            <h2
-                class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500 mb-4">
-                Telepathy</h2>
-            <p class="text-gray-600 font-medium">sound as selective communication</p>
+        <div
+          onclick="showTelepathy()"
+          class="bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 cursor-pointer hover:scale-105 hover:bg-white transition-all duration-300 transform flex flex-col items-center text-center"
+        >
+          <h2
+            class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-500 mb-4"
+          >
+            Telepathy
+          </h2>
+          <p class="text-gray-600 font-medium">
+            sound as selective communication
+          </p>
         </div>
 
         <!-- Ventriloquism Widget -->
-        <div onclick="showVentriloquism()"
-            class="bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 cursor-pointer hover:scale-105 hover:bg-white transition-all duration-300 transform flex flex-col items-center text-center">
-            <h2 class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500 mb-4">Ventriloquism</h2>
-            <p class="text-gray-600 font-medium">sound as properties of other objects</p>
+        <div
+          onclick="showVentriloquism()"
+          class="bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-8 cursor-pointer hover:scale-105 hover:bg-white transition-all duration-300 transform flex flex-col items-center text-center"
+        >
+          <h2
+            class="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-500 mb-4"
+          >
+            Ventriloquism
+          </h2>
+          <p class="text-gray-600 font-medium">
+            sound as properties of other objects
+          </p>
         </div>
-        </div>
+      </div>
     </div>
 
     <!-- SOUNDS VIEW -->
-     
-    <div id="soundsView" class="hidden bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-10 w-full max-w-md">
-        <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">
-            🎵 Available Sounds
-        </h1>
 
+    <div
+      id="soundsView"
+      class="hidden bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-10 w-full max-w-md"
+    >
+      <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">
+        🎵 Available Sounds
+      </h1>
 
-        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 mb-8 shadow-sm text-center">
-            <h2 class="text-xl font-bold text-gray-800 mb-3">How to Interact</h2>
-            <div class="space-y-2 text-gray-700 font-medium">
-                <p>Say <span class="font-bold text-indigo-600">“Play [chosen sound]”</span></p>
-                <p>When you want to stop the sound, say <span class="font-bold text-pink-600">“Stop [chosen sound]”</span></p>
-                <p>To move the sound around the room, point in the direction you'd like the robot to go.</p>
-            </div>
+      <div
+        class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 mb-8 shadow-sm text-center"
+      >
+        <h2 class="text-xl font-bold text-gray-800 mb-3">How to Interact</h2>
+        <div class="space-y-2 text-gray-700 font-medium">
+          <p>
+            Say
+            <span class="font-bold text-indigo-600">“Play [chosen sound]”</span>
+          </p>
+          <p>
+            When you want to stop the sound, say
+            <span class="font-bold text-pink-600">“Stop [chosen sound]”</span>
+          </p>
+          <p>
+            To move the sound around the room, point in the direction you'd like
+            the robot to go.
+          </p>
         </div>
+      </div>
 
-        <ul id="soundList" class="space-y-4 mb-8">
-            <li class="p-4 bg-gray-100 rounded-xl text-center text-gray-500 font-medium shadow-inner">Loading sounds...
-            </li>
-        </ul>
+      <ul id="soundList" class="space-y-4 mb-8">
+        <li
+          class="p-4 bg-gray-100 rounded-xl text-center text-gray-500 font-medium shadow-inner"
+        >
+          Loading sounds...
+        </li>
+      </ul>
 
-        <button onclick="showMain()"
-            class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl transition duration-200 shadow-xl transform hover:-translate-y-1">
-            Back to Menu
-        </button>
+      <button
+        onclick="showMain()"
+        class="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 rounded-xl transition duration-200 shadow-xl transform hover:-translate-y-1"
+      >
+        Back to Menu
+      </button>
     </div>
 
     <!-- TELEPATHY VIEW -->
-    <div id="telepathyView" class="hidden bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-10 w-full max-w-md">
-        <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">
-            📡 Telepathy Commands
-        </h1>
+    <div
+      id="telepathyView"
+      class="hidden bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-10 w-full max-w-md"
+    >
+      <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">
+        📡 Telepathy Commands
+      </h1>
 
-        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 mb-8 shadow-sm text-center">
-            <h2 class="text-xl font-bold text-gray-800 mb-3">How to Interact</h2>
-            <div class="space-y-2 text-gray-700 font-medium">
-                <p>Say the name of the command.</p>
-                <p>Then point to the person you'd like the command to be notified to.</p>
-                <p>Then say <span class="font-bold text-emerald-600">“Confirm”</span>.</p>
-            </div>
+      <div
+        class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 mb-8 shadow-sm text-center"
+      >
+        <h2 class="text-xl font-bold text-gray-800 mb-3">How to Interact</h2>
+        <div class="space-y-2 text-gray-700 font-medium">
+          <p>Say the name of the command.</p>
+          <p>
+            Then point to the person you'd like the command to be notified to.
+          </p>
+          <p>
+            Then say <span class="font-bold text-emerald-600">“Confirm”</span>.
+          </p>
         </div>
+      </div>
 
-        <p class="text-gray-600 font-medium text-center mb-6 text-sm">Say any of the commands below. The speaker will
-            confirm and then play the indicated sound.</p>
+      <p class="text-gray-600 font-medium text-center mb-6 text-sm">
+        Say any of the commands below. The speaker will confirm and then play
+        the indicated sound.
+      </p>
 
-        <ul class="space-y-4 mb-8">
-            <li class="p-5 bg-white shadow-md border border-emerald-100 rounded-xl text-center">
-                <p class="text-xl font-bold text-gray-800">Set Timer to Notify</p>
-                <p class="text-sm text-emerald-600 font-semibold mt-1">Set a timer for 5 second to notify [person]</p>
-            </li>
-            <li class="p-5 bg-white shadow-md border border-emerald-100 rounded-xl text-center">
-                <p class="text-xl font-bold text-gray-800">Send Meeting Reminder</p>
-                <p class="text-sm text-emerald-600 font-semibold mt-1">Send meeting reminder to [person]</p>
-            </li>
-            <li class="p-5 bg-white shadow-md border border-emerald-100 rounded-xl text-center">
-                <p class="text-xl font-bold text-gray-800">Wish Happy Birthday</p>
-                <p class="text-sm text-emerald-600 font-semibold mt-1">Send a small happy birthday message to [person]</p>
-            </li>
-        </ul>
+      <ul class="space-y-4 mb-8">
+        <li
+          class="p-5 bg-white shadow-md border border-emerald-100 rounded-xl text-center"
+        >
+          <p class="text-xl font-bold text-gray-800">Set Timer to Notify</p>
+          <p class="text-sm text-emerald-600 font-semibold mt-1">
+            Set a timer for 5 second to notify [person]
+          </p>
+        </li>
+        <li
+          class="p-5 bg-white shadow-md border border-emerald-100 rounded-xl text-center"
+        >
+          <p class="text-xl font-bold text-gray-800">Send Meeting Reminder</p>
+          <p class="text-sm text-emerald-600 font-semibold mt-1">
+            Send meeting reminder to [person]
+          </p>
+        </li>
+        <li
+          class="p-5 bg-white shadow-md border border-emerald-100 rounded-xl text-center"
+        >
+          <p class="text-xl font-bold text-gray-800">Wish Happy Birthday</p>
+          <p class="text-sm text-emerald-600 font-semibold mt-1">
+            Send a small happy birthday message to [person]
+          </p>
+        </li>
+      </ul>
 
-        <button onclick="showMain()"
-            class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-4 rounded-xl transition duration-200 shadow-xl transform hover:-translate-y-1">
-            Back to Menu
-        </button>
+      <button
+        onclick="showMain()"
+        class="w-full bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-4 rounded-xl transition duration-200 shadow-xl transform hover:-translate-y-1"
+      >
+        Back to Menu
+      </button>
     </div>
 
     <!-- VENTRILOQUISM VIEW -->
-    <div id="ventriloquismView" class="hidden bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-10 w-full max-w-4xl">
-        <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">
-            🗣️ Ventriloquism
-        </h1>
+    <div
+      id="ventriloquismView"
+      class="hidden bg-white/90 backdrop-blur-md shadow-2xl rounded-2xl p-10 w-full max-w-4xl"
+    >
+      <h1 class="text-3xl font-bold text-gray-800 text-center mb-8">
+        🗣️ Ventriloquism
+      </h1>
 
+      <div
+        class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 mb-8 shadow-sm text-center"
+      >
+        <h2 class="text-xl font-bold text-gray-800 mb-3">How to Interact</h2>
+        <div class="space-y-2 text-gray-700 font-medium">
+          <p>
+            Assign the interaction to an object by saying
+            <span class="font-bold text-indigo-600"
+              >“Assign [interaction] to [location]”</span
+            >
+            while pointing at the
+            <strong
+              ><span class="font-bold text-indigo-600">[location]</span></strong
+            >.
+          </p>
+          Then say <span class="font-bold text-indigo-600">"Confirm"</span>.
 
+          <p>
+            To check the status later, say
+            <strong>"Check [interaction]" or "Check [location]"</strong>.
+          </p>
+        </div>
+      </div>
 
-        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 mb-8 shadow-sm text-center">
-            <h2 class="text-xl font-bold text-gray-800 mb-3">How to Interact</h2>
-            <div class="space-y-2 text-gray-700 font-medium">
-                <p>Assign the interaction to an object by saying <span class="font-bold text-indigo-600">“Assign [interaction] to [location]”</span>
-                    while pointing at the <strong><span class="font-bold text-indigo-600">[location]</span></strong>.</p>
-                 Then say <span class="font-bold text-indigo-600">"Confirm"</span>.
-
-                <p>
-                    To check the status later, say 
-                    <strong>"Check [interaction]" or "Check [location]"</strong>.
-                </p>            
-            </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <!-- Left Column: Actions -->
+        <div class="bg-gray-50 p-6 rounded-xl shadow-inner">
+          <h2
+            class="text-2xl font-bold text-gray-700 text-center mb-6 border-b border-gray-200 pb-2"
+          >
+            Available Actions
+          </h2>
+          <ul class="space-y-4">
+            <li
+              class="p-4 bg-white shadow-md border-l-4 border-orange-400 rounded-lg text-center font-semibold text-gray-800"
+            >
+              Weather Report
+            </li>
+            <li
+              class="p-4 bg-white shadow-md border-l-4 border-orange-400 rounded-lg text-center font-semibold text-gray-800"
+            >
+              Read Aloud
+            </li>
+            <li
+              class="p-4 bg-white shadow-md border-l-4 border-orange-400 rounded-lg text-center font-semibold text-gray-800"
+            >
+              Last Updated
+            </li>
+          </ul>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-            <!-- Left Column: Actions -->
-            <div class="bg-gray-50 p-6 rounded-xl shadow-inner">
-                <h2 class="text-2xl font-bold text-gray-700 text-center mb-6 border-b border-gray-200 pb-2">Available Actions</h2>
-                <ul class="space-y-4">
-                    <li class="p-4 bg-white shadow-md border-l-4 border-orange-400 rounded-lg text-center font-semibold text-gray-800">
-                        Weather Report
-                    </li>
-                    <li class="p-4 bg-white shadow-md border-l-4 border-orange-400 rounded-lg text-center font-semibold text-gray-800">
-                        Read Aloud
-                    </li>
-                    <li class="p-4 bg-white shadow-md border-l-4 border-orange-400 rounded-lg text-center font-semibold text-gray-800">
-                        Last Updated
-                    </li>
-                </ul>
-            </div>
-
-            <!-- Right Column: Locations -->
-            <div class="bg-gray-50 p-6 rounded-xl shadow-inner">
-                <h2 class="text-2xl font-bold text-gray-700 text-center mb-6 border-b border-gray-200 pb-2">Available Locations</h2>
-                <ul class="space-y-4">
-                    <li class="p-4 bg-white shadow-md border-l-4 border-red-500 rounded-lg text-center font-semibold text-gray-800">
-                        Window
-                    </li>
-                    <li class="p-4 bg-white shadow-md border-l-4 border-red-500 rounded-lg text-center font-semibold text-gray-800">
-                        Whiteboard
-                    </li>
-                    <li class="p-4 bg-white shadow-md border-l-4 border-red-500 rounded-lg text-center font-semibold text-gray-800">
-                        Plant
-                    </li>
-                </ul>
-            </div>
+        <!-- Right Column: Locations -->
+        <div class="bg-gray-50 p-6 rounded-xl shadow-inner">
+          <h2
+            class="text-2xl font-bold text-gray-700 text-center mb-6 border-b border-gray-200 pb-2"
+          >
+            Available Locations
+          </h2>
+          <ul class="space-y-4">
+            <li
+              class="p-4 bg-white shadow-md border-l-4 border-red-500 rounded-lg text-center font-semibold text-gray-800"
+            >
+              Window
+            </li>
+            <li
+              class="p-4 bg-white shadow-md border-l-4 border-red-500 rounded-lg text-center font-semibold text-gray-800"
+            >
+              Whiteboard
+            </li>
+            <li
+              class="p-4 bg-white shadow-md border-l-4 border-red-500 rounded-lg text-center font-semibold text-gray-800"
+            >
+              Plant
+            </li>
+          </ul>
         </div>
-        
-        <p class="text-gray-600 font-medium text-center mb-6 text-sm">Say commands like <strong>"Assign weather report to window"</strong> or <strong>"Check window"</strong>.</p>
+      </div>
 
-        <button onclick="showMain()"
-            class="w-full max-w-md mx-auto block bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-4 rounded-xl transition duration-200 shadow-xl transform hover:-translate-y-1">
-            Back to Menu
-        </button>
+      <p class="text-gray-600 font-medium text-center mb-6 text-sm">
+        Say commands like <strong>"Assign weather report to window"</strong> or
+        <strong>"Check window"</strong>.
+      </p>
+
+      <button
+        onclick="showMain()"
+        class="w-full max-w-md mx-auto block bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white font-bold py-4 rounded-xl transition duration-200 shadow-xl transform hover:-translate-y-1"
+      >
+        Back to Menu
+      </button>
     </div>
 
     <script>
-        const API_BASE = "http://localhost:8000";
+      const API_BASE = "http://localhost:8000";
 
-        function loadSounds() {
-            const list = document.getElementById("soundList");
-            const sounds = ["mozart.mp3", "white_noise.mp3", "news.mp3"];
+      function loadSounds() {
+        const list = document.getElementById("soundList");
+        const sounds = ["mozart.mp3", "white_noise.mp3", "news.mp3"];
 
-            list.innerHTML = "";
-            sounds.forEach(sound => {
-                const li = document.createElement("li");
+        list.innerHTML = "";
+        sounds.forEach((sound) => {
+          const li = document.createElement("li");
 
-                // Format the sound name for nice display
-                let displayName = sound.replace('.mp3', '').replace('_', ' ');
-                displayName = displayName.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+          // Format the sound name for nice display
+          let displayName = sound.replace(".mp3", "").replace("_", " ");
+          displayName = displayName
+            .split(" ")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
 
-                li.className = "p-5 bg-white shadow-md border border-gray-100 rounded-xl text-xl text-center font-bold text-gray-800 transform transition-transform hover:scale-105 duration-200";
-                li.textContent = displayName;
-                list.appendChild(li);
-            });
-        }
+          li.className =
+            "p-5 bg-white shadow-md border border-gray-100 rounded-xl text-xl text-center font-bold text-gray-800 transform transition-transform hover:scale-105 duration-200";
+          li.textContent = displayName;
+          list.appendChild(li);
+        });
+      }
 
-        function showSounds() {
-            document.getElementById("mainView").classList.add("hidden");
-            document.getElementById("soundsView").classList.remove("hidden");
-            loadSounds();
-        }
+      function showSounds() {
+        document.getElementById("mainView").classList.add("hidden");
+        document.getElementById("soundsView").classList.remove("hidden");
+        loadSounds();
+      }
 
-        function showTelepathy() {
-            document.getElementById("mainView").classList.add("hidden");
-            document.getElementById("telepathyView").classList.remove("hidden");
-        }
+      function showTelepathy() {
+        document.getElementById("mainView").classList.add("hidden");
+        document.getElementById("telepathyView").classList.remove("hidden");
+      }
 
-        function showVentriloquism() {
-            document.getElementById("mainView").classList.add("hidden");
-            document.getElementById("ventriloquismView").classList.remove("hidden");
-        }
+      function showVentriloquism() {
+        document.getElementById("mainView").classList.add("hidden");
+        document.getElementById("ventriloquismView").classList.remove("hidden");
+      }
 
-        function showMain() {
-            document.getElementById("soundsView").classList.add("hidden");
-            document.getElementById("telepathyView").classList.add("hidden");
-            document.getElementById("ventriloquismView").classList.add("hidden");
-            document.getElementById("mainView").classList.remove("hidden");
-        }
+      function showMain() {
+        document.getElementById("soundsView").classList.add("hidden");
+        document.getElementById("telepathyView").classList.add("hidden");
+        document.getElementById("ventriloquismView").classList.add("hidden");
+        document.getElementById("mainView").classList.remove("hidden");
+      }
     </script>
-</body>
-
+  </body>
 </html>
