@@ -32,6 +32,17 @@ def stop_audio(verbose=True):
         if verbose:
             print(f"Stop error: {e}")
 
+
+def play_repeat_prompt():
+    """Play fallback prompt when speech/intention could not be handled."""
+    stop_audio(verbose=False)
+    try:
+        pygame.mixer.music.load("sounds/error.mp3")
+        pygame.mixer.music.play()
+        print("🔊 Playing sounds/error.mp3...")
+    except Exception as e:
+        print(f"Repeat prompt playback error: {e}")
+
 # 🔊 Cross-platform audio playback
 def play_audio():
     global current_sound
@@ -70,3 +81,4 @@ def execute_command(command_id):
 
     else:
         print("Intent unclear")
+        play_repeat_prompt()

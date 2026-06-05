@@ -2,7 +2,8 @@ import pygame
 import threading
 import time
 import numpy as np
-from soundscape import stop_audio
+from intent_similarity import AFFIRMATIVE_PHRASES, NEGATIVE_PHRASES, matches_any_command
+from soundscape import play_repeat_prompt, stop_audio
 
 telepathy_commands = ["SET_TIMER", "SEND_REMINDER", "WISH_BIRTHDAY"]
 
@@ -15,6 +16,19 @@ def play_telepathy_sequence(track_name, source, recognizer, model):
     
     # Prompt the user to confirm first
     print("\n💡 Telepathy: Awaiting verbal 'confirm' from user...")
+    
+    # Play confirmation question audio
+    stop_audio(verbose=False)
+    try:
+        print("🔊 Telepathy: Playing sounds/confirm_question.mp3...")
+        pygame.mixer.music.load("sounds/confirm_question.mp3")
+        pygame.mixer.music.play()
+        
+        # Wait until confirm_question.mp3 finishes playing
+        while pygame.mixer.music.get_busy():
+            time.sleep(0.1)
+    except Exception as e:
+        pass
     
     # Listen specifically for the word "confirm"
     confirmed = False
@@ -34,12 +48,15 @@ def play_telepathy_sequence(track_name, source, recognizer, model):
 
             if text:
                 print(f"🗣️ Heard (Telepathy): '{text}'")
-                if "confirm" in text or "yes" in text:
+                if matches_any_command(text, AFFIRMATIVE_PHRASES):
                     confirmed = True
                     print("✅ User confirmed!")
-                elif "cancel" in text or "no" in text or "stop" in text:
+                elif matches_any_command(text, NEGATIVE_PHRASES):
                     print("❌ User cancelled telepathy action.")
                     return # Exit without playing anything
+                else:
+                    print("↪️ Telepathy: Non-confirmation phrase detected. Exiting confirmation mode.")
+                    return
 
         except Exception as e:
             print(f"Telepathy listen error: {e}")
@@ -79,3 +96,4 @@ def execute_telepathy_command(command_id, source, recognizer, model):
 
     else:
         print("Telepathy intent unclear")
+        play_repeat_prompt()

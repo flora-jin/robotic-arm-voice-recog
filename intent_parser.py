@@ -61,7 +61,7 @@ Rules:
                 },
                 {'role': 'user', 'content': user_text}
             ],
-            options={"temperature": 0}
+            options={"temperature": 0, "keep_alive": "60m"}
         )
 
         raw = response['message']['content']

@@ -2,7 +2,13 @@ import pygame
 import threading
 import time
 import numpy as np
-from soundscape import stop_audio
+from intent_similarity import (
+    AFFIRMATIVE_PHRASES,
+    NEGATIVE_PHRASES,
+    has_similar_intent_prefix,
+    matches_any_command,
+)
+from soundscape import play_repeat_prompt, stop_audio
 
 # Graceful ROS imports for testing on non-ROS Linux/Mac machines
 try:
@@ -29,11 +35,29 @@ ventriloquism_commands = [
 ]
 
 def is_ventriloquism_command(command_id):
-    return command_id in ventriloquism_commands
+    return (
+        command_id in ventriloquism_commands
+        or has_similar_intent_prefix(command_id, "ASSIGN")
+        or has_similar_intent_prefix(command_id, "CHECK")
+    )
 
 def wait_for_confirm(source, recognizer, model):
     """Wait for the user to verbally confirm."""
     print("\n🗣️ Ventriloquism: Awaiting verbal 'confirm' from user...")
+    
+    # Play confirmation question audio
+    stop_audio(verbose=False)
+    try:
+        print("🔊 Ventriloquism: Playing sounds/confirm_question.mp3...")
+        pygame.mixer.music.load("sounds/confirm_question.mp3")
+        pygame.mixer.music.play()
+        
+        # Wait until confirm_question.mp3 finishes playing
+        while pygame.mixer.music.get_busy():
+            time.sleep(0.1)
+    except Exception as e:
+        pass
+    
     confirmed = False
     
     # Briefly adjust for ambient noise for better accuracy on short words
@@ -50,12 +74,15 @@ def wait_for_confirm(source, recognizer, model):
 
             if text:
                 print(f"🗣️ Heard (Ventriloquism): '{text}'")
-                if "confirm" in text or "yes" in text:
+                if matches_any_command(text, AFFIRMATIVE_PHRASES):
                     confirmed = True
                     print("✅ User confirmed!")
                     return True
-                elif "cancel" in text or "no" in text or "stop" in text:
+                elif matches_any_command(text, NEGATIVE_PHRASES):
                     print("❌ User cancelled ventriloquism action.")
+                    return False
+                else:
+                    print("↪️ Ventriloquism: Non-confirmation phrase detected. Exiting confirmation mode.")
                     return False
 
         except Exception as e:
@@ -78,8 +105,14 @@ def execute_ventriloquism_command(command_id, source, recognizer, model, origina
     """Execute the action mapped to the ventriloquism command_id."""
     
     # Handle Check commands
-    if command_id.startswith("CHECK_"):
-        target = command_id.split("CHECK_")[1] # e.g. "WINDOW" or "WEATHER_REPORT"
+    if has_similar_intent_prefix(command_id, "CHECK"):
+        command_parts = command_id.split("_", 1)
+        if len(command_parts) < 2:
+            print("❌ Ventriloquism: Check command missing target.")
+            play_repeat_prompt()
+            return
+
+        target = command_parts[1] # e.g. "WINDOW" or "WEATHER_REPORT"
         
         target_lower = target.lower()
         locations = ["window", "whiteboard", "plant"]
@@ -94,6 +127,7 @@ def execute_ventriloquism_command(command_id, source, recognizer, model, origina
                 print(f"🔍 Ventriloquism: Checking {location}. Playing assigned action: {action}")
             else:
                 print(f"🔍 Ventriloquism: Checking {location}. No action assigned yet.")
+                play_repeat_prompt()
                 return
                 
         # Scenario B: User asked to check an action directly
@@ -102,6 +136,7 @@ def execute_ventriloquism_command(command_id, source, recognizer, model, origina
             # Optional: ensure this action is actually assigned anywhere before playing
             if action not in location_to_action.values():
                 print(f"🔍 Ventriloquism: Checking {action}. This action is not currently assigned to any location.")
+                play_repeat_prompt()
                 return
             else:
                 print(f"🔍 Ventriloquism: Checking {action}. It is currently assigned to a location.")
@@ -109,6 +144,14 @@ def execute_ventriloquism_command(command_id, source, recognizer, model, origina
                     if act == action:
                         location = loc
                         break
+
+        if ros_available:
+            msg = f"check,{action}"
+            ventriloquism_pub.publish(msg)
+            print(f"📡 Published ROS state: {msg}")
+
+        # Delay before playing audio for CHECK commands
+        time.sleep(3)
 
         # Map action back to sound file
         if action == "WEATHER_REPORT":
@@ -118,17 +161,17 @@ def execute_ventriloquism_command(command_id, source, recognizer, model, origina
         elif action == "LAST_UPDATED":
             play_sound(f"update_{location}.mp3")
             
-        if ros_available:
-            msg = f"check,{action}"
-            ventriloquism_pub.publish(msg)
-            print(f"📡 Published ROS state: {msg}")
-            
     # Handle Assign commands
-    elif command_id.startswith("ASSIGN_"):
+    elif has_similar_intent_prefix(command_id, "ASSIGN"):
         # We need to figure out which location they meant from the original text if it's not strictly structured
         # The Ollama prompt will return "ASSIGN_WEATHER_REPORT" but the text might be "Assign weather report to the plant"
-        
+
         action_parts = command_id.split("_")[1:]
+        if not action_parts:
+            print("❌ Ventriloquism: Assign command missing action.")
+            play_repeat_prompt()
+            return
+
         action_name = "_".join(action_parts) # WEATHER_REPORT
 
         # Find location in the text
@@ -143,6 +186,7 @@ def execute_ventriloquism_command(command_id, source, recognizer, model, origina
             
         if not target_location:
             print("❌ Ventriloquism: Could not determine location to assign to. Please specify window, whiteboard, or plant.")
+            play_repeat_prompt()
             return
 
         print(f"🔄 Ventriloquism: Found assignment request for {action_name} to {target_location}.")

@@ -9,8 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from intent_parser import ask_ollama
-from soundscape import get_sounds, set_current_sound, get_current_sound, execute_command, stop_audio
+from intent_similarity import is_similar_command
+from soundscape import get_sounds, set_current_sound, get_current_sound, execute_command, play_repeat_prompt, stop_audio
 from telepathy import is_telepathy_command, execute_telepathy_command
+from intent_similarity import IGNORE_PHRASES, matches_any_command
 from ventriloquism import is_ventriloquism_command, execute_ventriloquism_command
 import pygame
 # FastAPI app
@@ -63,12 +65,21 @@ recognizer = sr.Recognizer()
 # MICROPHONE_INDEX = 4  # Change if needed
 mic = sr.Microphone()
 
+# End utterances based on silence instead of fixed-length chunks.
+recognizer.dynamic_energy_threshold = True
+recognizer.pause_threshold = 1.5
+recognizer.non_speaking_duration = 0.5
+recognizer.phrase_threshold = 0.3
+
+WAKE_PHRASE = "wake up wake up"
+STOP_PHRASE = "stop task"
+
 def listen_for_command(source):
     """Listen for voice commands and process them"""
     print("🎤 Listening...")
 
     try:
-        audio = recognizer.listen(source, phrase_time_limit=5)
+        audio = recognizer.listen(source, timeout=3, phrase_time_limit=None)
 
         # Convert audio for Whisper
         audio_data = audio.get_raw_data(convert_rate=16000, convert_width=2)
@@ -80,6 +91,10 @@ def listen_for_command(source):
         if text:
             print(f"🗣️ Heard: '{text}'")
             return text
+        return None
+
+    except sr.WaitTimeoutError:
+        # No speech detected within timeout window; keep loop responsive.
         return None
 
     except Exception as e:
@@ -111,7 +126,7 @@ def main():
                 continue
                 
             # Voice Activity Trigger Logic
-            if "hey robot arm" in user_command:
+            if is_similar_command(user_command, WAKE_PHRASE):
                 # Optional: Handle case where wakeword and command are in the same breath (e.g. "hey robot arm check window")
                 active_mode = True
                 print("🟢 Woken up! Ready to process commands.")
@@ -121,22 +136,26 @@ def main():
                     pygame.mixer.music.load("telepathy_sounds/confirm.mp3")
                     pygame.mixer.music.play()
                 except Exception as e:
-                    pass
-                continue
+                    play_repeat_prompt()
+                ConnectionRefusedError
                 
-            if "stop task" in user_command:
+            if is_similar_command(user_command, STOP_PHRASE):
                 if active_mode:
                     active_mode = False
-                    print("🔴 Going to sleep. Say 'Hey robot arm' to wake me.")
+                    print("🔴 Going to sleep. Say 'wake up wake up' to wake me.")
                     # Play confirmation sleep beep
                     stop_audio(verbose=False)
                     try:
                         pygame.mixer.music.load("telepathy_sounds/confirm.mp3")
                         pygame.mixer.music.play()
                     except Exception as e:
-                        pass
+                        play_repeat_prompt()
                 continue
-                
+            
+            # if matches_any_command(user_command, IGNORE_PHRASES):
+                # print("💤 Ignored noise: " + user_command)
+                # continue
+
             # If not active, ignore the ambient noise
             if not active_mode:
                 # print("💤 Ignored ambient noise while asleep.")
@@ -144,6 +163,7 @@ def main():
 
             # Only reach here if active_mode is True and no sleepword was triggered
             command_id = ask_ollama(user_command)
+
 
             if is_telepathy_command(command_id):
                 execute_telepathy_command(command_id, source, recognizer, model)
